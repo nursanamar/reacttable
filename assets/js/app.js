@@ -33,9 +33,9 @@ function Row(props) {
 const RowAdd = (props) => {
   return <tr>
     <td>#</td>
-    <td><input type="text" value={props.name} onChange={props.actionName(e)} /></td>
-    <td><input type="text" value={props.address} onChange={props.actionAddress(e)} /></td>
-    <td><input type="text" value={props.phone} onChange={props.actionPhone(e)} /></td>
+    <td><input type="text" value={props.name} onChange={props.actionName} autoFocus placeholder="Name" /></td>
+    <td><input type="text" value={props.address} onChange={props.actionAddress} placeholder="address" /></td>
+    <td><input type="text" value={props.phone} onChange={props.actionPhone} placeholder="phone" /></td>
   </tr>
 }
 
@@ -93,7 +93,7 @@ class Crud extends React.Component {
       name:"",
       addres:"",
       phone:"",
-      addRow:FALSE,
+      addRow:"",
     };
   }
   filterChange(filter) {
@@ -112,7 +112,7 @@ class Crud extends React.Component {
 
   addButton(){
     this.setState({
-      addRow: TRUE
+      addRow: "TRUE"
     })
   }
   actionName(e){
@@ -159,7 +159,7 @@ class Crud extends React.Component {
       loading:"mencari di database"
     });
     console.log("Searchin data...");
-    fetch('https://nursanamar.herokuapp.com/Welcome/searchLike/'+filter+'/'+page).then((response) => {
+    fetch('http://localhost/ci/Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
       this.setState({
@@ -173,7 +173,7 @@ class Crud extends React.Component {
       loading:"loading...."
     });
     console.log("fetching data...");
-    fetch("https://nursanamar.herokuapp.com/Welcome/getLimit/"+page).then(function(response) {
+    fetch("http://localhost/ci/Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
       this.setState({
@@ -190,8 +190,8 @@ class Crud extends React.Component {
     this.state.data.forEach(data => {
       baris.push(<Row id={data.id} nama={data.name} addres={data.addres} phone={data.phone} />);
     });
-    if (this.state.addRow) {
-      addRow = <RowAdd name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName} actionAddress={this.actionAddress} actionPhone={this.actionPhone} />
+    if (this.state.addRow === "TRUE") {
+      addRow = <RowAdd name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName.bind(this)} actionAddress={this.actionAddress.bind(this)} actionPhone={this.actionPhone.bind(this)} />
     }
     return (
       <div className='col-sm-8 col-sm-offset-2'>

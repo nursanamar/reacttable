@@ -125,7 +125,7 @@ class Crud extends React.Component {
       loading:"mencari di database"
     });
 
-    fetch('http://mirip.esy.es/Welcome/searchLike/'+filter+'/'+page).then((response) => {
+    fetch('https://nursanamar.herokuapp.com/Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
       this.setState({
@@ -138,7 +138,7 @@ class Crud extends React.Component {
     this.setState({
       loading:"loading...."
     })
-    fetch("http://mirip.esy.es/Welcome/getLimit/"+page).then(function(response) {
+    fetch("https://nursanamar.herokuapp.com/Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
       this.setState({

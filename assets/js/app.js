@@ -25,11 +25,19 @@ function Row(props) {
       <td>{props.nama}</td>
       <td>{props.addres}</td>
       <td>{props.phone}</td>
+      <td><a onClick={props.hapus} className="btn-danger btn-small btn">Hapus</a> || <a onClick={props.edit} className="btn-danger btn-small btn">Edit</a></td>
     </tr>
   );
 }
 
-
+const RowAdd = (props) => {
+  return <tr>
+    <td>#</td>
+    <td><input type="text" value={props.name} onChange={props.actionName(e} /></td>
+    <td><input type="text" value={props.address} onChange={props.actionAddress(e} /></td>
+    <td><input type="text" value={props.phone} onChange={props.actionPhone(e} /></td>
+  </tr>
+}
 
 
 class Tambah extends React.Component {
@@ -59,9 +67,9 @@ class Tambah extends React.Component {
   render() {
     return (
       <form>
-        <input className="form-control tambah" type="text" placeholder="nama" value={this.state.nama} onChange={this.nama} />
-        <input className="form-control tambah" type="text" placeholder="kelas" value={this.state.kelas} onChange={this.kelas} />
-        <input className="btn btn-primary tambah" type="submit" value="tambah" onClick={this.submit} />
+        <input className="form-control tambah" type="text" placeholder="name" value={this.state.nama} onChange={this.nama} />
+        <input className="form-control tambah" type="text" placeholder="address" value={this.state.kelas} onChange={this.kelas} />
+        <input className="btn btn-primary tambah" type="submit" value="phone" onClick={this.submit} />
       </form>
     );
   }
@@ -75,12 +83,17 @@ class Crud extends React.Component {
   constructor(props) {
     super(props);
     this.filterChange = this.filterChange.bind(this);
+    this.addButton = this.addButton.bind(this);
     this.state = {
       filter:"",
       data:[],
       status:"",
       page:1,
-      loading:"loading......."
+      loading:"loading.......",
+      name:"",
+      addres:"",
+      phone:"",
+      addRow:FALSE,
     };
   }
   filterChange(filter) {
@@ -95,6 +108,27 @@ class Crud extends React.Component {
       this.searchOnDb(filter);
     }
 
+  }
+
+  addButton(){
+    this.setState({
+      addRow: TRUE
+    })
+  }
+  actionName(e){
+    this.setState({
+      name: e.target.value
+    });
+  }
+  actionPhone(e){
+    this.setState({
+      phone: e.target.value
+    });
+  }
+  actionAddress(e){
+    this.setState({
+      addres: e.target.value
+    })
   }
   nextPage() {
     var next = this.state.page + 1;
@@ -124,7 +158,7 @@ class Crud extends React.Component {
     this.setState({
       loading:"mencari di database"
     });
-
+    console.log("Searchin data...");
     fetch('https://nursanamar.herokuapp.com/Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
@@ -137,7 +171,8 @@ class Crud extends React.Component {
   componentDidMount(page = 1) {
     this.setState({
       loading:"loading...."
-    })
+    });
+    console.log("fetching data...");
     fetch("https://nursanamar.herokuapp.com/Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
@@ -151,27 +186,34 @@ class Crud extends React.Component {
   }
   render() {
     var baris	 = [];
+    var addRow = null;
     this.state.data.forEach(data => {
       baris.push(<Row id={data.id} nama={data.name} addres={data.addres} phone={data.phone} />);
     });
-
+    if (this.state.addRow) {
+      addRow = <RowAdd name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName} actionAddress={this.actionAddress} actionPhone={this.actionPhone} />
+    }
     return (
       <div className='col-sm-8 col-sm-offset-2'>
       <h1>Tabel CRUD</h1>
         <Cari event={this.filterChange} value={this.state.filter} />
         <a onClick={this.prevPage.bind(this)} className="btn btn-default">Prev</a><a onClick={this.nextPage.bind(this)} className="btn btn-default">next</a>
         <span>{this.state.loading}</span>
+        <a onClick={this.addButton} className="btn btn-primary" >Tambah</a>
         <table className='table table-striped table-responsive'>
         <thead>
           <td>Id</td>
           <td>Nama</td>
           <td>Alamat</td>
           <td>Phone</td>
+          <td>action</td>
         </thead>
         <tbody>
           {baris}
+          {addRow}
           </tbody>
         </table>
+
       </div>
     );
   }

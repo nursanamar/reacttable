@@ -33,9 +33,9 @@ function Row(props) {
 const RowAdd = (props) => {
   return <tr>
     <td>#</td>
-    <td><input type="text" value={props.name} onChange={props.actionName(e} /></td>
-    <td><input type="text" value={props.address} onChange={props.actionAddress(e} /></td>
-    <td><input type="text" value={props.phone} onChange={props.actionPhone(e} /></td>
+    <td><input type="text" value={props.name} onChange={props.actionName(e)} /></td>
+    <td><input type="text" value={props.address} onChange={props.actionAddress(e)} /></td>
+    <td><input type="text" value={props.phone} onChange={props.actionPhone(e)} /></td>
   </tr>
 }
 

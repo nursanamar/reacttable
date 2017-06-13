@@ -154,7 +154,7 @@ class Crud extends React.Component {
 
   delete(id){
     console.log("proccess....");
-    fetch("http://localhost/cicomposer/public/Welcome/deleteData",{
+    fetch("https://nursanamar.herokuapp.com/Welcome/deleteData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -168,7 +168,7 @@ class Crud extends React.Component {
   }
   editData(){
     console.log("editing...");
-    fetch("http://localhost/cicomposer/public/Welcome/editData",{
+    fetch("https://nursanamar.herokuapp.com/Welcome/editData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -186,7 +186,7 @@ class Crud extends React.Component {
     })
   }
   addData(){
-    fetch("http://localhost/cicomposer/public/Welcome/addData",{
+    fetch("https://nursanamar.herokuapp.com/Welcome/addData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -248,7 +248,7 @@ class Crud extends React.Component {
       loading:"mencari di database"
     });
     console.log("Searchin data...");
-    fetch('http://localhost/cicomposer/public/Welcome/searchLike/'+filter+'/'+page).then((response) => {
+    fetch('https://nursanamar.herokuapp.com/Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
       this.setState({

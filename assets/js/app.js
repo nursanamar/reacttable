@@ -262,7 +262,7 @@ class Crud extends React.Component {
       loading:"loading...."
     });
     console.log("fetching data...");
-    fetch("http://localhost/cicomposer/public/Welcome/getLimit/"+page).then(function(response) {
+    fetch("https://nursanamar.herokuapp.com/Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
       this.setState({

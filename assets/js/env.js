@@ -1,1 +1,1 @@
-var host = "http://localhost/cicomposer/public/";
+var host = "https://nursanamar.herokuapp.com/";

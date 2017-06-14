@@ -16,7 +16,25 @@ class Cari extends React.Component {
 }
 
 
+function Alert(props){
+  var classType;
+  switch (props.type) {
+    case 'error':
+      classType = 'alert-danger'
+      break;
+    case 'succes':
+      classType = 'alert-success'
+      break;
+    case 'info':
+      classType = 'alert-info'
+      break;
+  }
+  return <div className={"alert alert-dismissable"+classType}>
+  <a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>{props.type}</strong> {props.message}
+</div>
 
+}
 
 function Row(props) {
   return (
@@ -25,7 +43,13 @@ function Row(props) {
       <td>{props.nama}</td>
       <td>{props.addres}</td>
       <td>{props.phone}</td>
-      <td><a onClick={props.hapus} className="btn-danger btn-small btn">Hapus</a> || <a onClick={props.edit} className="btn-danger btn-small btn">Edit</a></td>
+      <td><a onClick={(e) => {
+        props.hapus(props.id);
+        e.preventDefault();
+      }} className="btn-danger btn-xs btn">Hapus</a> || <a onClick={(e) => {
+        props.edit(props.id,props.nama,props.addres,props.phone);
+        e.preventDefault();
+      }} className="btn-danger btn-xs btn">Edit</a></td>
     </tr>
   );
 }
@@ -33,12 +57,28 @@ function Row(props) {
 const RowAdd = (props) => {
   return <tr>
     <td>#</td>
+<<<<<<< HEAD
     <td><input type="text" value={props.name} onChange={props.actionName} autoFocus placeholder="Name" /></td>
     <td><input type="text" value={props.address} onChange={props.actionAddress} placeholder="address" /></td>
     <td><input type="text" value={props.phone} onChange={props.actionPhone} placeholder="phone" /></td>
+=======
+    <td><input type="text" value={props.name} onChange={props.actionName} /></td>
+    <td><input type="text" value={props.address} onChange={props.actionAddress} /></td>
+    <td><input type="text" value={props.phone} onChange={props.actionPhone} /></td>
+    <td><a className="btn btn-xs btn-primary" onClick={props.addData} >Tambah</a> || <a className="btn btn-xs btn-default" onClick={props.cancel}>Cancel</a></td>
+>>>>>>> gh-pages
   </tr>
 }
 
+const RowEdit = (props) => {
+  return <tr>
+    <td>{props.id}</td>
+    <td><input type="text" value={props.name} onChange={props.actionName} /></td>
+    <td><input type="text" value={props.address} onChange={props.actionAddress} /></td>
+    <td><input type="text" value={props.phone} onChange={props.actionPhone} /></td>
+    <td><a className="btn btn-xs btn-primary" onClick={props.edit} >Edit</a> || <a className="btn btn-xs btn-default" onClick={props.cancel}>Cancel</a></td>
+  </tr>
+}
 
 class Tambah extends React.Component {
   constructor(props) {
@@ -93,7 +133,10 @@ class Crud extends React.Component {
       name:"",
       addres:"",
       phone:"",
-      addRow:"",
+      addRow:"false",
+      editRow:"false",
+      id: "",
+      alert:,
     };
   }
   filterChange(filter) {
@@ -112,7 +155,78 @@ class Crud extends React.Component {
 
   addButton(){
     this.setState({
-      addRow: "TRUE"
+      addRow: "true"
+    })
+  }
+  editButton(id,name,addres,phone){
+    this.setState({
+      editRow:"true",
+      id: id,
+      name:name,
+      addres:addres,
+      phone:phone,
+    })
+  }
+  cancel(){
+    this.setState({
+      addRow:"false",
+      editRow:"false",
+      name:"",
+      addres:"",
+      phone:"",
+    })
+  }
+
+  delete(id){
+    console.log("proccess....");
+    fetch(host+"Welcome/deleteData",{
+      method: 'POST',
+      headers: "Content-Type: application/json",
+      body: JSON.stringify({
+        id:id
+      })
+    }).then((res) => {
+
+      this.componentDidMount();
+      console.log("delete succes");
+    })
+  }
+  editData(){
+    console.log("editing...");
+    fetch(host+"Welcome/editData",{
+      method: 'POST',
+      headers: "Content-Type: application/json",
+      body: JSON.stringify({
+        id: this.state.id,
+        data: {
+          name: this.state.name,
+          addres: this.state.addres,
+          phone: this.state.phone
+        }
+      })
+    }).then((res) => {
+      this.componentDidMount();
+      this.cancel();
+      console.log("edited");
+    })
+  }
+  addData(){
+    fetch(host+"Welcome/addData",{
+      method: 'POST',
+      headers: "Content-Type: application/json",
+      body: JSON.stringify({
+        name:this.state.name,
+        addres:this.state.addres,
+        phone:this.state.phone
+      })
+    }).then((res) => {
+      console.log('rquest succes', res);
+      this.setState({
+        addRow:"false"
+      });
+      this.componentDidMount();
+    }).catch((error) => {
+      console.log("error",error);
     })
   }
   actionName(e){
@@ -159,7 +273,7 @@ class Crud extends React.Component {
       loading:"mencari di database"
     });
     console.log("Searchin data...");
-    fetch('http://localhost/ci/Welcome/searchLike/'+filter+'/'+page).then((response) => {
+    fetch(host+'Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
       this.setState({
@@ -173,25 +287,30 @@ class Crud extends React.Component {
       loading:"loading...."
     });
     console.log("fetching data...");
-    fetch("http://localhost/ci/Welcome/getLimit/"+page).then(function(response) {
+    fetch(host+"Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
       this.setState({
         data: json,
         loading:""
       });
-    }.bind(this));
-    console.log(this.state.page);
-    console.log((this.state.page > 1));
+      console.log("fetch succes...");
+    }.bind(this)).;
+
   }
   render() {
     var baris	 = [];
     var addRow = null;
+    var editRow = null;
     this.state.data.forEach(data => {
-      baris.push(<Row id={data.id} nama={data.name} addres={data.addres} phone={data.phone} />);
+      baris.push(<Row id={data.id} nama={data.name} addres={data.addres} phone={data.phone} hapus={this.delete.bind(this)} edit={this.editButton.bind(this)} />);
     });
-    if (this.state.addRow === "TRUE") {
-      addRow = <RowAdd name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName.bind(this)} actionAddress={this.actionAddress.bind(this)} actionPhone={this.actionPhone.bind(this)} />
+    if (this.state.addRow === "true") {
+      addRow = <RowAdd name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName.bind(this)} actionAddress={this.actionAddress.bind(this)} actionPhone={this.actionPhone.bind(this)} addData={this.addData.bind(this)} cancel={this.cancel.bind(this)}  />
+    }
+    if (this.state.editRow === "true") {
+      editRow = <RowEdit id={this.state.id} name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName.bind(this)} actionAddress={this.actionAddress.bind(this)} actionPhone={this.actionPhone.bind(this)} edit={this.editData.bind(this)} cancel={this.cancel.bind(this)}  />
+
     }
     return (
       <div className='col-sm-8 col-sm-offset-2'>
@@ -211,6 +330,7 @@ class Crud extends React.Component {
         <tbody>
           {baris}
           {addRow}
+          {editRow}
           </tbody>
         </table>
 

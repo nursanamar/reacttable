@@ -16,7 +16,25 @@ class Cari extends React.Component {
 }
 
 
+function Alert(props){
+  var classType;
+  switch (props.type) {
+    case 'error':
+      classType = 'alert-danger'
+      break;
+    case 'succes':
+      classType = 'alert-success'
+      break;
+    case 'info':
+      classType = 'alert-info'
+      break;
+  }
+  return <div className={"alert alert-dismissable"+classType}>
+  <a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>{props.type}</strong> {props.message}
+</div>
 
+}
 
 function Row(props) {
   return (
@@ -112,6 +130,7 @@ class Crud extends React.Component {
       addRow:"false",
       editRow:"false",
       id: "",
+      alert:,
     };
   }
   filterChange(filter) {
@@ -154,7 +173,7 @@ class Crud extends React.Component {
 
   delete(id){
     console.log("proccess....");
-    fetch("https://nursanamar.herokuapp.com/Welcome/deleteData",{
+    fetch(host+"Welcome/deleteData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -168,7 +187,7 @@ class Crud extends React.Component {
   }
   editData(){
     console.log("editing...");
-    fetch("https://nursanamar.herokuapp.com/Welcome/editData",{
+    fetch(host+"Welcome/editData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -186,7 +205,7 @@ class Crud extends React.Component {
     })
   }
   addData(){
-    fetch("https://nursanamar.herokuapp.com/Welcome/addData",{
+    fetch(host+"Welcome/addData",{
       method: 'POST',
       headers: "Content-Type: application/json",
       body: JSON.stringify({
@@ -248,7 +267,7 @@ class Crud extends React.Component {
       loading:"mencari di database"
     });
     console.log("Searchin data...");
-    fetch('https://nursanamar.herokuapp.com/Welcome/searchLike/'+filter+'/'+page).then((response) => {
+    fetch(host+'Welcome/searchLike/'+filter+'/'+page).then((response) => {
       return response.json();
     }).then((json) => {
       this.setState({
@@ -262,7 +281,7 @@ class Crud extends React.Component {
       loading:"loading...."
     });
     console.log("fetching data...");
-    fetch("http://localhost/cicomposer/public/Welcome/getLimit/"+page).then(function(response) {
+    fetch(host+"Welcome/getLimit/"+page).then(function(response) {
       return response.json();
     }).then(function(json){
       this.setState({
@@ -270,7 +289,7 @@ class Crud extends React.Component {
         loading:""
       });
       console.log("fetch succes...");
-    }.bind(this));
+    }.bind(this)).;
 
   }
   render() {

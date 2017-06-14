@@ -29,8 +29,11 @@ function Alert(props){
       classType = 'alert-info'
       break;
   }
-  return <div className={"alert alert-dismissable"+classType}>
-  <a href="#" className="close" data-dismiss="alert" aria-label="close">&times;</a>
+  return <div className={"alert alert-dismissable "+classType}>
+  <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={(e) => {
+    props.onClick();
+    e.preventDefault();
+  }}>&times;</a>
   <strong>{props.type}</strong> {props.message}
 </div>
 
@@ -57,16 +60,10 @@ function Row(props) {
 const RowAdd = (props) => {
   return <tr>
     <td>#</td>
-<<<<<<< HEAD
-    <td><input type="text" value={props.name} onChange={props.actionName} autoFocus placeholder="Name" /></td>
-    <td><input type="text" value={props.address} onChange={props.actionAddress} placeholder="address" /></td>
-    <td><input type="text" value={props.phone} onChange={props.actionPhone} placeholder="phone" /></td>
-=======
     <td><input type="text" value={props.name} onChange={props.actionName} /></td>
     <td><input type="text" value={props.address} onChange={props.actionAddress} /></td>
     <td><input type="text" value={props.phone} onChange={props.actionPhone} /></td>
     <td><a className="btn btn-xs btn-primary" onClick={props.addData} >Tambah</a> || <a className="btn btn-xs btn-default" onClick={props.cancel}>Cancel</a></td>
->>>>>>> gh-pages
   </tr>
 }
 
@@ -136,7 +133,8 @@ class Crud extends React.Component {
       addRow:"false",
       editRow:"false",
       id: "",
-      alert:,
+      alert:"",
+      message:"",
     };
   }
   filterChange(filter) {
@@ -152,7 +150,11 @@ class Crud extends React.Component {
     }
 
   }
-
+  dismiss(){
+    this.setState({
+      alert:""
+    })
+  }
   addButton(){
     this.setState({
       addRow: "true"
@@ -178,6 +180,11 @@ class Crud extends React.Component {
   }
 
   delete(id){
+    this.setState({
+      loading:"loading....",
+      alert: "info",
+      message:"Mohon tunggu"
+    });
     console.log("proccess....");
     fetch(host+"Welcome/deleteData",{
       method: 'POST',
@@ -189,9 +196,24 @@ class Crud extends React.Component {
 
       this.componentDidMount();
       console.log("delete succes");
+      this.setState({
+        alert: "succes",
+        message:"Data berhasil di hapus"
+      });
+    }).catch((err) => {
+      this.setState({
+        loading:"",
+        alert: "error",
+        message:err
+      })
     })
   }
   editData(){
+    this.setState({
+      loading:"loading....",
+      alert: "info",
+      message:"Mohon tunggu"
+    });
     console.log("editing...");
     fetch(host+"Welcome/editData",{
       method: 'POST',
@@ -208,9 +230,24 @@ class Crud extends React.Component {
       this.componentDidMount();
       this.cancel();
       console.log("edited");
+      this.setState({
+        alert: "succes",
+        message:"Data berhasil di edit"
+      });
+    }).catch((err) => {
+      this.setState({
+        loading:"",
+        alert: "error",
+        message:err
+      })
     })
   }
   addData(){
+    this.setState({
+      loading:"loading....",
+      alert: "info",
+      message:"Mohon tunggu"
+    });
     fetch(host+"Welcome/addData",{
       method: 'POST',
       headers: "Content-Type: application/json",
@@ -221,12 +258,18 @@ class Crud extends React.Component {
       })
     }).then((res) => {
       console.log('rquest succes', res);
-      this.setState({
-        addRow:"false"
-      });
       this.componentDidMount();
-    }).catch((error) => {
-      console.log("error",error);
+      this.setState({
+        addRow:"false",
+        alert: "succes",
+        message:"Data berhasil di tambah"
+      });
+    }).catch((err) => {
+      this.setState({
+        loading:"",
+        alert: "error",
+        message:err
+      })
     })
   }
   actionName(e){
@@ -270,7 +313,9 @@ class Crud extends React.Component {
   }
   searchOnDb(filter,page = 1){
     this.setState({
-      loading:"mencari di database"
+      loading:"loading....",
+      alert: "info",
+      message:"Mohon tunggu"
     });
     console.log("Searchin data...");
     fetch(host+'Welcome/searchLike/'+filter+'/'+page).then((response) => {
@@ -278,13 +323,23 @@ class Crud extends React.Component {
     }).then((json) => {
       this.setState({
         data: json,
-        loading:""
+        loading:"",
+        alert: "succes",
+        message:"Data berhasil di update"
       });
-    }.bind(this))
+    }.bind(this)).catch((err) => {
+      this.setState({
+        loading:"",
+        alert: "error",
+        message:err
+      })
+    })
   }
   componentDidMount(page = 1) {
     this.setState({
-      loading:"loading...."
+      loading:"loading....",
+      alert: "info",
+      message:"Mohon tunggu"
     });
     console.log("fetching data...");
     fetch(host+"Welcome/getLimit/"+page).then(function(response) {
@@ -292,16 +347,25 @@ class Crud extends React.Component {
     }).then(function(json){
       this.setState({
         data: json,
-        loading:""
+        loading:"",
+        alert: "succes",
+        message:"Data berhasil di update"
       });
       console.log("fetch succes...");
-    }.bind(this)).;
+    }.bind(this)).catch((err) => {
+      this.setState({
+        loading:"",
+        alert: "error",
+        message:err
+      })
+    });
 
   }
   render() {
     var baris	 = [];
     var addRow = null;
     var editRow = null;
+    var alert = null;
     this.state.data.forEach(data => {
       baris.push(<Row id={data.id} nama={data.name} addres={data.addres} phone={data.phone} hapus={this.delete.bind(this)} edit={this.editButton.bind(this)} />);
     });
@@ -312,10 +376,14 @@ class Crud extends React.Component {
       editRow = <RowEdit id={this.state.id} name={this.state.name} address={this.state.addres} phone={this.state.phone} actionName={this.actionName.bind(this)} actionAddress={this.actionAddress.bind(this)} actionPhone={this.actionPhone.bind(this)} edit={this.editData.bind(this)} cancel={this.cancel.bind(this)}  />
 
     }
+    if (this.state.alert !== "") {
+      alert = <Alert type={this.state.alert} message={this.state.message} onClick={this.dismiss.bind(this)} />
+    }
     return (
       <div className='col-sm-8 col-sm-offset-2'>
       <h1>Tabel CRUD</h1>
         <Cari event={this.filterChange} value={this.state.filter} />
+        {alert}
         <a onClick={this.prevPage.bind(this)} className="btn btn-default">Prev</a><a onClick={this.nextPage.bind(this)} className="btn btn-default">next</a>
         <span>{this.state.loading}</span>
         <a onClick={this.addButton} className="btn btn-primary" >Tambah</a>
